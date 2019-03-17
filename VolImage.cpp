@@ -23,13 +23,13 @@ using namespace std;
 WLCKGO001 :: VolImage :: VolImage(){
 	width = 0;
 	height = 0;
-	vector<unsigned char**> slices(0);
+	vector<unsigned char**> slices;
 	
 }
  
 /**
 * Destructor - Delete all the dynamically created
-* memory by deleting the 2D array
+* 			 - memory by deleting the 2D array
 **/
 WLCKGO001 :: VolImage :: ~VolImage(){
 	for (int i = 0; i<slices.size(); i++){
@@ -41,10 +41,11 @@ WLCKGO001 :: VolImage :: ~VolImage(){
 } 
 
 /**
-* populate the object with images in stack and
+* Populate the object with images in stack and
 * set member variables define in .cpp
 */ 
 bool WLCKGO001 :: VolImage :: readImages(string baseName){
+
 	vector<string> tokens;
 	string fileName;
 	string directory;
@@ -56,6 +57,8 @@ bool WLCKGO001 :: VolImage :: readImages(string baseName){
 	std::string line;
 	if(!file){
 		cout << "Could not open " << baseName + ".data" << endl;
+		cout << "Make sure that " << baseName << " exists."<< endl;
+		return false;
 	}
 
 	else{
@@ -74,7 +77,6 @@ bool WLCKGO001 :: VolImage :: readImages(string baseName){
 	istringstream(tokens[1]) >> height;
 	istringstream(tokens[2]) >> number_images;
 	
-	cout << width << " " << height << " " << number_images << endl;
 
 	unsigned char ** slice;
 	for (int i = 0; i < number_images; i++){
@@ -99,10 +101,8 @@ bool WLCKGO001 :: VolImage :: readImages(string baseName){
 	return true;
 }
 
-// compute difference map and write out; define in .cpp
-void WLCKGO001 :: VolImage :: diffmap(int sliceI, int sliceJ, string output_prefix){
-
-	//create header file
+void WLCKGO001 :: VolImage :: header(int width, int height, string output_prefix){
+	
 	string header_filename = output_prefix + ".data";
 	ofstream output_header(header_filename.c_str(), ios::out);
 	if(!output_header){
@@ -110,15 +110,22 @@ void WLCKGO001 :: VolImage :: diffmap(int sliceI, int sliceJ, string output_pref
 	}
 	else if(output_header.is_open()){
         output_header << width << " " << height << " " << 1 << endl;
-        //always close files!
         output_header.close();
     }
+}
 
-    //create binary output file
+
+// compute difference map and write out; define in .cpp
+void WLCKGO001 :: VolImage :: diffmap(int sliceI, int sliceJ, string output_prefix){
+
+	int dwidth = width;
+	int dheight = height;
+	header(dwidth, dheight, output_prefix);
+
     string binary_file = output_prefix + ".raw";
     ofstream output_binary(binary_file.c_str(), ios::binary);
     if(!output_binary){
-		cout << "Could not open " << header_filename << endl;
+		cout << "Could not open " << binary_file << endl;
 	}
 	else if(output_binary.is_open()){
 		for(int i = 0; i < height; i++){
@@ -133,21 +140,14 @@ void WLCKGO001 :: VolImage :: diffmap(int sliceI, int sliceJ, string output_pref
 
 // extract slice sliceId and write to output - define in .cpp
 void WLCKGO001 :: VolImage :: extract(int sliceId, string output_prefix){
-	string header_filename = output_prefix + ".dat";
-	ofstream output_header(header_filename.c_str(), ios::out);
-	if(!output_header){
-		cout << "Could not open " << header_filename << endl;
-	}
-	else if(output_header.is_open()){
-        output_header << width << " " << height << " " << 1 << endl;
-        //always close files!
-        output_header.close();
-    }
+	int ewidth = width;
+	int eheight = height;
+	header(ewidth, eheight, output_prefix);
 
     string binary_file = output_prefix + ".raw";
     ofstream output_binary(binary_file.c_str(), ios::binary);
     if(!output_binary){
-		cout << "Could not open " << header_filename << endl;
+		cout << "Could not open " << binary_file << endl;
 	}
 	else if(output_binary.is_open()){
 		for(int i = 0; i < height; i++){
@@ -159,21 +159,15 @@ void WLCKGO001 :: VolImage :: extract(int sliceId, string output_prefix){
 }
 
 void WLCKGO001 :: VolImage :: extractRow(int rowId, string output_prefix){
-	string header_filename = output_prefix + ".dat";
-	ofstream output_header(header_filename.c_str(), ios::out);
-	if(!output_header){
-		cout << "Could not open " << header_filename << endl;
-	}
-	else if(output_header.is_open()){
-        output_header << width << " " << height << " " << 1 << endl;
-        //always close files!
-        output_header.close();
-    }
+	int rwidth = width;
+	int rheight = height;
+	header(rwidth, rheight, output_prefix);
 
     string binary_file = output_prefix + ".raw";
     ofstream output_binary(binary_file.c_str(), ios::binary);
+
     if(!output_binary){
-		cout << "Could not open " << header_filename << endl;
+		cout << "Could not open " << binary_file << endl;
 	}
 	else if(output_binary.is_open()){
 		for(int i = 0; i < slices.size(); i++){
@@ -184,13 +178,18 @@ void WLCKGO001 :: VolImage :: extractRow(int rowId, string output_prefix){
     }
 }
 
-// number of bytes uses to store image data bytes
-//and pointers (ignore vector<> container, dims etc)
+
 int WLCKGO001 :: VolImage :: volImageSize(void){
-	return height*width*slices.size();
+	int slicesSize = slices.size();
+	int charSize = sizeof(unsigned char);
+	int ptrSize = sizeof(unsigned char*);
+	int PtrtoPtrSize = sizeof(unsigned char**);
+	int numOfBytes = ((charSize * slicesSize * width * height) + (ptrSize * height * slicesSize) + (PtrtoPtrSize * slicesSize));
+
+	return numOfBytes;
 } 
 
 int WLCKGO001 :: VolImage :: numOfImages(void){
 	return slices.size();
-} // define in .cpp
+} 
 

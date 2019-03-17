@@ -11,7 +11,7 @@ CK=-std=c++11
 all:VolImagedriver
 
 VolImagedriver: VolImage.o VolImagedriver.o
-	$(CC) VolImagedriver.o VolImage.o -o VolImagedriver
+	$(CC) VolImagedriver.o VolImage.o -o VolImage
 
 VolImage.o: VolImage.cpp VolImage.h
 	$(CC) VolImage.cpp -c 
@@ -20,10 +20,10 @@ VolImagedriver.o: VolImagedriver.cpp VolImage.h
 	$(CC) VolImagedriver.cpp -c 
 
 run: 
-	./VolImagedriver
+	./VolImage
 
 clean:
 	@rm -f *.o
-	@rm VolImagedriver
+	@rm VolImage
 
 

@@ -37,12 +37,19 @@ namespace WLCKGO001{
 		void extract(int sliceId, string output_prefix);
 		
 		void extractRow(int rowId, string output_prefix);
+
 		// number of bytes uses to store image data bytes
 		//and pointers (ignore vector<> container, dims etc)
 		int volImageSize(void); // define in .cpp
 		
+		// number of images in the slices vector 
 		int numOfImages(void);
+
+		// creates header file for method diffmap, extract and extractRow
+		void header(int width, int height, string output_prefix);
 		};
+
+
 }
 
 #endif 

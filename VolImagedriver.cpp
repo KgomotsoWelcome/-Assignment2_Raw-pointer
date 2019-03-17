@@ -19,10 +19,8 @@ int main(int argc, char* argv[]){
  	string executable = argv[0];
  	string imageBase = argv[1];
  	volimage.readImages(imageBase);
- 	cout << "Number of images: " << volimage.numOfImages() << endl;
-	cout << "Number of bytes required: " << volimage.volImageSize() << endl;
 
- 	if (argc == 3){
+ 	if (argc == 2){
  		cout << "Number of images: " << volimage.numOfImages() << endl;
 		cout << "Number of bytes required: " << volimage.volImageSize() << endl;
  	}
