@@ -50,11 +50,15 @@ bool WLCKGO001 :: VolImage :: readImages(string baseName){
 	string directory;
 	cout << "Enter the file directory holding the MRI .raw files" << endl;
 	cin >> directory;
+
 	fileName = directory + "/" + baseName + ".data";
 	ifstream file(fileName);
 	std::string line;
+	if(!file){
+		cout << "Could not open " << baseName + ".data" << endl;
+	}
 
-	if(file.is_open()){
+	else{
 		file >> std :: ws;
 		while (getline(file, line)) {
 			stringstream check1(line);
@@ -63,7 +67,7 @@ bool WLCKGO001 :: VolImage :: readImages(string baseName){
 				tokens.push_back(intermediate);
 			}
 		}
-	file.close();
+		file.close();
 	}
 
 	istringstream(tokens[0]) >> width;
@@ -79,7 +83,6 @@ bool WLCKGO001 :: VolImage :: readImages(string baseName){
 
 		ifstream binaryImage(buffername.c_str(), ios::binary);
 		
-		
 		if (binaryImage.is_open()){
 			slice = new unsigned char*[height];
 
@@ -92,9 +95,7 @@ bool WLCKGO001 :: VolImage :: readImages(string baseName){
 			slices.push_back(slice);
 			binaryImage.close();
 		}
-	
 	}
-
 	return true;
 }
 
@@ -128,19 +129,68 @@ void WLCKGO001 :: VolImage :: diffmap(int sliceI, int sliceJ, string output_pref
 		}
         output_binary.close();
     }
-
-
 }
 
 // extract slice sliceId and write to output - define in .cpp
 void WLCKGO001 :: VolImage :: extract(int sliceId, string output_prefix){
-	
+	string header_filename = output_prefix + ".dat";
+	ofstream output_header(header_filename.c_str(), ios::out);
+	if(!output_header){
+		cout << "Could not open " << header_filename << endl;
+	}
+	else if(output_header.is_open()){
+        output_header << width << " " << height << " " << 1 << endl;
+        //always close files!
+        output_header.close();
+    }
+
+    string binary_file = output_prefix + ".raw";
+    ofstream output_binary(binary_file.c_str(), ios::binary);
+    if(!output_binary){
+		cout << "Could not open " << header_filename << endl;
+	}
+	else if(output_binary.is_open()){
+		for(int i = 0; i < height; i++){
+			char* byte = (char*)slices[sliceId][i];
+			output_binary.write(byte,width);
+		}
+        output_binary.close();
+    }
+}
+
+void WLCKGO001 :: VolImage :: extractRow(int rowId, string output_prefix){
+	string header_filename = output_prefix + ".dat";
+	ofstream output_header(header_filename.c_str(), ios::out);
+	if(!output_header){
+		cout << "Could not open " << header_filename << endl;
+	}
+	else if(output_header.is_open()){
+        output_header << width << " " << height << " " << 1 << endl;
+        //always close files!
+        output_header.close();
+    }
+
+    string binary_file = output_prefix + ".raw";
+    ofstream output_binary(binary_file.c_str(), ios::binary);
+    if(!output_binary){
+		cout << "Could not open " << header_filename << endl;
+	}
+	else if(output_binary.is_open()){
+		for(int i = 0; i < slices.size(); i++){
+			char* byte = (char*)slices[i][rowId];
+			output_binary.write(byte,width);
+		}
+        output_binary.close();
+    }
 }
 
 // number of bytes uses to store image data bytes
 //and pointers (ignore vector<> container, dims etc)
 int WLCKGO001 :: VolImage :: volImageSize(void){
-	return 0;
-} // define in .cpp
+	return height*width*slices.size();
+} 
 
+int WLCKGO001 :: VolImage :: numOfImages(void){
+	return slices.size();
+} // define in .cpp
 
