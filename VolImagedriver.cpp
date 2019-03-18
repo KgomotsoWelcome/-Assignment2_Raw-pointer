@@ -14,7 +14,7 @@ using namespace std;
 VolImage volimage;
 
 int main(int argc, char* argv[]){
- 	cout << "THIS IS THE DRIVER FILE." << endl;
+ 	cout << "*********Driver file**********." << endl;
 
  	string executable = argv[0];
  	string imageBase = argv[1];
@@ -37,8 +37,9 @@ int main(int argc, char* argv[]){
  			int sliceG;
  			istringstream (argv[3]) >> sliceG;
  			string output_file_name = argv[4];
- 			volimage.extractRow(sliceG, output_file_name);
+ 			volimage.extractCross(sliceG, output_file_name);
  		}
+
  	}
 
  	else if(argc == 6){

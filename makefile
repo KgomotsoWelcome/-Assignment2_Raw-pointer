@@ -1,8 +1,8 @@
 #*****************************************************************
 # makefile used to compile the driver file
 # Author: Kgomotso Welcome
-# Date: 19/02/2019
-# Date completed: 24/02/2019
+# Date: 25/02/2019
+# Date completed: 17/03/2019
 #*****************************************************************
 
 CC=g++
@@ -20,7 +20,16 @@ VolImagedriver.o: VolImagedriver.cpp VolImage.h
 	$(CC) VolImagedriver.cpp -c 
 
 run: 
-	./VolImage
+	./VolImage MRI
+
+extract:
+	./VolImage MRI -x 10 output
+
+difference:
+	./VolImage MRI -d 10 50 output2
+
+extractCross:
+	./VolImage MRI -g 10 output3
 
 clean:
 	@rm -f *.o

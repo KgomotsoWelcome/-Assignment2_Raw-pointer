@@ -1,8 +1,8 @@
 /*****************************************************************
-* Header file for the databaseDriver
+* Header file for the Volimagedriver
 * Author: Kgomotso Welcome
-* Date: 19/02/2019
-* Date completed: 24/02/2019
+* Date: 25/02/2019
+* Date completed: 17/03/2019
 ******************************************************************/
 
 #ifndef _VolImage_H
@@ -36,7 +36,7 @@ namespace WLCKGO001{
 		// extract slice sliceId and write to output - define in .cpp
 		void extract(int sliceId, string output_prefix);
 		
-		void extractRow(int rowId, string output_prefix);
+		void extractCross(int rowId, string output_prefix);
 
 		// number of bytes uses to store image data bytes
 		//and pointers (ignore vector<> container, dims etc)
